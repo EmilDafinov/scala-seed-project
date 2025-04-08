@@ -1,0 +1,17 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: scala-seed-project
+build:
+  tagPolicy:
+    gitCommit: { }
+  artifacts:
+    - image: docker.io/library/scala-seed-project
+      custom:
+        # environment variable $IMG2 will be set to the build of image2
+        buildCommand: |
+          ./src/main/script/buildApplicationImage.sh
+
+manifests:
+  rawYaml:
+    - target/docker/stage/deployment.yaml
