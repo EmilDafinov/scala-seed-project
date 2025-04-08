@@ -1,7 +1,8 @@
 import Dependencies._
 
 ThisBuild / scalaVersion := "2.13.16"
-ThisBuild / version := "0.1.0-SNAPSHOT"
+//DO NOT SET THE VERSION HERE, it is dynamically resolved from git
+//ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "com.example"
 ThisBuild / organizationName := "example"
 
@@ -22,7 +23,8 @@ lazy val root = (project in file("."))
       munit % Test,
     ),
     dockerBaseImage := "openjdk:8-jdk-slim",
-    dockerUpdateLatest := true
+    dockerUpdateLatest := true,
+    ThisBuild / version ~= (_.replace('+', '_')), //The version is used for the docker tag, it does not like `+` signs
   )
 
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.
