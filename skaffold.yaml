@@ -12,6 +12,12 @@ build:
         buildCommand: |
           ./src/main/script/buildApplicationImage.sh
 
-manifests:
-  rawYaml:
-    - target/docker/stage/deployment.yaml
+deploy:
+  helm:
+    releases:
+      - name: scala-seed-project
+        chartPath: scala-seed-project
+#        artifactOverrides:
+#          image: docker.io/library/scala-seed-project
+#        imageStrategy:
+#          helm: {}

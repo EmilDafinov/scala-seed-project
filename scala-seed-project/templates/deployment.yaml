@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.image.repository_name }}
+  namespace: default
+  labels:
+    app: {{ .Values.image.repository_name }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ .Values.image.repository_name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.image.repository_name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repositoryPrefix }}/{{ .Values.image.repository_name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+            - name: JAVA_OPTS
+              value: "-server -Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m"
+          ports:
+            - containerPort: 9000
+              name: app-port
+            - containerPort: 5005
+              name: debug-port
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
