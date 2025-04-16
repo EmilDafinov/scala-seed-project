@@ -28,13 +28,19 @@ spec:
               value: "-server -Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m"
           ports:
             - containerPort: 9000
-              name: app-port
+              name: service-port
             - containerPort: 5005
               name: debug-port
           livenessProbe:
             httpGet:
               path: /health
-              port: 9000
+              port: service-port
               scheme: HTTP
-            initialDelaySeconds: 10
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: service-port
+            initialDelaySeconds: 5
             timeoutSeconds: 2
