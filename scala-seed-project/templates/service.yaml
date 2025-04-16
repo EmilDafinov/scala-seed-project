@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: {{ .Chart.Name }}
   labels:
-    app: {{ .Values.image.repository_name }}
+    app: {{ .Chart.Name }}
 spec:
   selector:
-    app: {{ .Values.image.repository_name }}
+    app: {{ .Chart.Name }}
   ports:
     - name: service-port
       port: 9000

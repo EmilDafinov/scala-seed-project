@@ -7,18 +7,8 @@ replicaCount: 1
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repositoryPrefix: docker.io/library
-  repository_name: scala-seed-project
-  pullPolicy: IfNotPresent
+  repository: docker.io/library/scala-seed-project
   tag: "OVERRIDE-ME"
-
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 80
-
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

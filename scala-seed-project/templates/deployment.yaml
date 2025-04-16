@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.image.repository_name }}
+  name: {{ .Chart.Name }}
   namespace: default
   labels:
-    app: {{ .Values.image.repository_name }}
+    app: {{ .Chart.Name }}
 spec:
   replicas: 1
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ .Values.image.repository_name }}
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.image.repository_name }}
+        app: {{ .Chart.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repositoryPrefix }}/{{ .Values.image.repository_name }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"

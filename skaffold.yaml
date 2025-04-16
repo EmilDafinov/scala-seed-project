@@ -10,7 +10,7 @@ build:
       custom:
         dependencies:
           paths:
-            - "src/main"
+            - "src/main" # this is the source directory that will be watched for changes
         buildCommand: |
           ./src/main/script/buildApplicationImage.sh
 
