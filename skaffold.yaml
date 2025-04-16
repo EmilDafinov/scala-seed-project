@@ -17,7 +17,3 @@ deploy:
     releases:
       - name: scala-seed-project
         chartPath: scala-seed-project
-#        artifactOverrides:
-#          image: docker.io/library/scala-seed-project
-#        imageStrategy:
-#          helm: {}
