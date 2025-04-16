@@ -8,7 +8,9 @@ build:
   artifacts:
     - image: docker.io/library/scala-seed-project
       custom:
-        # environment variable $IMG2 will be set to the build of image2
+        dependencies:
+          paths:
+            - "src/main"
         buildCommand: |
           ./src/main/script/buildApplicationImage.sh
 
@@ -17,3 +19,5 @@ deploy:
     releases:
       - name: scala-seed-project
         chartPath: scala-seed-project
+        setValueTemplates:
+          project.rootdir: "{{.PWD}}"

@@ -23,6 +23,7 @@ lazy val root = (project in file("."))
       munit % Test,
     ),
     dockerBaseImage := "openjdk:8-jdk-slim",
+    dockerExposedPorts := Seq(9000, 5005),
     dockerUpdateLatest := true,
     ThisBuild / version ~= (_.replace('+', '_')), //The version is used for the docker tag, it does not like `+` signs
   )

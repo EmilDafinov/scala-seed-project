@@ -16,7 +16,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: "/Users/emildafinov/scala-seed-project/local_postgres_data" # Host path on MacOS
+    path: "{{ .Values.project.rootdir }}/local_postgres_data" # Host path on MacOS
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
