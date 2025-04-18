@@ -7,7 +7,7 @@ import org.apache.pekko.http.scaladsl.Http
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-object Main {
+object Main extends ApplicationRootModule {
 
   implicit val system = ActorSystem("my-system")
 

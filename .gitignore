@@ -58,3 +58,5 @@ project/plugins/project/
 hs_err_pid*
 
 local_postgres_data/
+scala-seed-project/charts/*.tgz
+scala-seed-project/Chart.lock
