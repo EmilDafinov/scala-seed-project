@@ -15,9 +15,10 @@ lazy val root = (project in file("."))
     name := "Scala Seed Project",
     libraryDependencies ++= Seq(
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
-      "org.apache.pekko" %% "pekko-stream" % pekkoVersion,
+      "org.apache.pekko" %% "pekko-stream" % "1.1.0",
       "org.apache.pekko" %% "pekko-slf4j" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoVersion,
+      "org.apache.pekko" %% "pekko-connectors-kafka" % "1.0.0",
       "com.outr" %% "scribe" % scribeVersion,
       "org.slf4j" % "slf4j-simple" % "2.0.17",
       munit % Test,

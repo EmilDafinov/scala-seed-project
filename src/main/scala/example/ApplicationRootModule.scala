@@ -1,7 +1,15 @@
 package example
 
-import example.kafka.KafkaConsumersModule
+import example.dummy_messages.DummyMessageProducerModule
+import example.http.routes.HttpControllersModule
+import example.kafka.KafkaModule
 
 
 trait ApplicationRootModule
-  extends KafkaConsumersModule
+  extends AkkaDependenciesModule
+    with KafkaModule
+    with DummyMessageProducerModule
+    with HttpControllersModule {
+
+
+}
