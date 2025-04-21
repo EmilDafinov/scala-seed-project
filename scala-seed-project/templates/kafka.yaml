@@ -1,95 +1,62 @@
-apiVersion: v1
-kind: Service
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
 metadata:
-  name: zookeeper
+  name: my-topic-1
   labels:
-    app: zookeeper
+    strimzi.io/cluster: {{ .Values.kafka.cluster.name }}
 spec:
-  selector:
-    app: zookeeper
-  ports:
-    - name: service-port
-      port: 2181
+  partitions: 2
+  replicas: 2
 
 ---
 
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
 metadata:
-  name: zookeeper-deployment
+  name: dual-role
+  labels:
+    strimzi.io/cluster: {{ .Values.kafka.cluster.name }}
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: zookeeper
-  template:
-    metadata:
-      labels:
-        app: zookeeper
-    spec:
-      containers:
-        - name: zookeeper
-          image: confluentinc/cp-zookeeper:7.4.1
-          ports:
-            - containerPort: 2181
-          env:
-            - name: ALLOW_ANONYMOUS_LOGIN
-              value: "yes"
-            - name: ZOOKEEPER_CLIENT_PORT
-              value: "2181"
-            - name: ZOOKEEPER_TICK_TIME
-              value: "2000"
-
+  roles:
+    - controller
+    - broker
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 1Gi
+        deleteClaim: true
+        kraftMetadata: shared
 ---
 
-apiVersion: v1
-kind: Service
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
 metadata:
-  name: kafka
-  labels:
-    app: kafka
+  name: {{ .Values.kafka.cluster.name }}
+  annotations:
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled
 spec:
-  selector:
-    app: kafka
-  ports:
-    - name: service-port
-      port: 9092
-{{/*    - name: external-port*/}}
-{{/*      port: 9094*/}}
----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kafka
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: kafka
-  template:
-    metadata:
-      labels:
-        app: kafka
-    spec:
-      containers:
-        - name: kafka
-          image: bitnami/kafka:2.8.1
-          ports:
-            - containerPort: 9092
-              name: service-port
-          env:
-            - name: KAFKA_BROKER_ID
-              value: "1"
-            - name: KAFKA_CFG_LISTENERS
-              value: "PLAINTEXT://0.0.0.0:9092"
-            - name: KAFKA_CFG_ADVERTISED_LISTENERS
-              value: "PLAINTEXT://kafka:9092"
-            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
-              value: "PLAINTEXT:PLAINTEXT"
-            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
-              value: "zookeeper:2181"
-            - name: ALLOW_PLAINTEXT_LISTENER
-              value: "yes"
-            - name: KAFKA_ENABLE_KRAFT
-              value: "no"
+  kafka:
+    version: 3.9.0
+    metadataVersion: 3.9-IV0
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    config:
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      default.replication.factor: 1
+      min.insync.replicas: 1
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}

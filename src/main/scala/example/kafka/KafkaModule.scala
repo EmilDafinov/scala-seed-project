@@ -18,7 +18,7 @@ trait KafkaModule {
         system = system,
         keySerializer = new StringSerializer,
         valueSerializer = new StringSerializer
-      ).withBootstrapServers("kafka:9092")
+      ).withBootstrapServers("my-cluster-kafka-bootstrap:9092")
     )
 
 
