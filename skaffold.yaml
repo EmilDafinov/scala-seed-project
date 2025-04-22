@@ -6,6 +6,9 @@ build:
   tagPolicy:
     gitCommit: { }
   artifacts:
+    - image: docker.io/library/scala-seed-project-flyway
+      docker:
+        dockerfile: flyway/Dockerfile
     - image: docker.io/library/scala-seed-project
       custom:
         dependencies:

@@ -17,6 +17,12 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      initContainers:
+        - name: flyway
+          image: docker.io/library/scala-seed-project-flyway
+          command:
+            - flyway
+            - migrate
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

@@ -1,0 +1,7 @@
+[environments.development]
+url = "jdbc:postgresql://postgres-service:5433/postgres"
+user= "postgres"
+password = "Password1234"
+
+[flyway]
+environment = "development"
