@@ -7,6 +7,7 @@ import example.kafka.KafkaModule
 
 trait ApplicationRootModule
   extends AkkaDependenciesModule
+    with ConfigModule
     with KafkaModule
     with DummyMessageProducerModule
     with HttpControllersModule {

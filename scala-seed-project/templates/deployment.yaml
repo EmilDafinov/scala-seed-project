@@ -20,18 +20,19 @@ spec:
       initContainers:
         - name: flyway
           image: docker.io/library/scala-seed-project-flyway
-          command:
-            - flyway
-            - migrate
+          command: ['sh', '-c', 'sleep 5 && flyway migrate']
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: application-conf
+              mountPath: /config
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
             - name: JAVA_OPTS
-              value: "-server -Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m"
+              value: "-server -Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m -Dconfig.file=/config/application.conf"
           ports:
             - containerPort: 9000
               name: service-port
@@ -50,3 +51,8 @@ spec:
               port: service-port
             initialDelaySeconds: 5
             timeoutSeconds: 2
+      volumes:
+        - name: application-conf
+          configMap:
+            name: {{ .Chart.Name }}-config
+

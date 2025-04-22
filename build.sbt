@@ -21,6 +21,7 @@ lazy val root = (project in file("."))
       "org.apache.pekko" %% "pekko-connectors-kafka" % "1.0.0",
       "com.outr" %% "scribe" % scribeVersion,
       "org.slf4j" % "slf4j-simple" % "2.0.17",
+      "com.typesafe" % "config" % "1.4.3",
       munit % Test,
     ),
     dockerBaseImage := "openjdk:8-jdk-slim",

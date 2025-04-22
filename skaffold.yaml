@@ -9,6 +9,7 @@ build:
     - image: docker.io/library/scala-seed-project-flyway
       docker:
         dockerfile: flyway/Dockerfile
+        noCache: true
     - image: docker.io/library/scala-seed-project
       custom:
         dependencies:

@@ -1,5 +1,6 @@
 package example.http.routes
 
+import com.typesafe.config.ConfigFactory
 import example.dummy_messages.DummyMessageProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.pekko.Done
