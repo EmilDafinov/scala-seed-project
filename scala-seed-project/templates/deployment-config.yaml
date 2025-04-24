@@ -4,6 +4,4 @@ metadata:
   name: {{ .Chart.Name }}-config
 data:
   application.conf: |-
-    kafka.bootstap_servers = [
-      "my-cluster-kafka-bootstrap:9092"
-    ]
+{{ .Files.Get "application.conf" | indent 4}}

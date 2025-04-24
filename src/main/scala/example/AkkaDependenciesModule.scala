@@ -4,7 +4,7 @@ import org.apache.pekko.actor.ActorSystem
 
 import scala.concurrent.ExecutionContext
 
-class AkkaDependenciesModule {
+trait AkkaDependenciesModule {
 
   implicit val system: ActorSystem = ActorSystem("my-system")
   implicit val ec: ExecutionContext = system.dispatcher

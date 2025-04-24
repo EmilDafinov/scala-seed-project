@@ -1,6 +1,5 @@
 package example.http.routes
 
-import com.typesafe.config.ConfigFactory
 import example.dummy_messages.DummyMessageProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.pekko.Done
@@ -17,6 +16,7 @@ object MessageProducerController {
 
   def apply(
      producer: DummyMessageProducer,
+     topic: String,
      messageSink: Sink[ProducerRecord[String, String], Future[Done]]
   )(implicit sys: ActorSystem, ec: ExecutionContext): Route = {
     (path("messages")
@@ -25,8 +25,7 @@ object MessageProducerController {
         Source
           .fromIterator(() => producer.dummyMessages().iterator)
           .map { msg =>
-            scribe.info(s"Writing message ${msg.key}, ${msg.content}")
-            new ProducerRecord("my-topic-1", msg.key, msg.content)
+            new ProducerRecord(topic, msg.key, msg.content)
           }
           .runWith(messageSink)
           .map(_ => HttpResponse(status = StatusCodes.Accepted))

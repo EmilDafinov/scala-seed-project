@@ -1,9 +1,8 @@
 package example.http.routes
+import example.AkkaDependenciesModule
 import example.dummy_messages.DummyMessageProducerModule
 import example.kafka.KafkaModule
-import example.{AkkaDependenciesModule, ApplicationRootModule}
 import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server.Route
 
 trait HttpControllersModule {
   this: AkkaDependenciesModule
@@ -13,6 +12,7 @@ trait HttpControllersModule {
   val routes = HealthController() ~
     MessageProducerController(
       producer = dummyMessagedProducer,
-      messageSink = producer
+      messageSink = producer,
+      topic = eventsTopic
     )
 }
