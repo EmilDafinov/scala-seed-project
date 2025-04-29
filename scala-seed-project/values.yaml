@@ -24,15 +24,3 @@ resources: {}
 kafka:
   cluster:
     name: my-cluster
-
-yamlApplicationConfig:
-  kafka:
-    clusters:
-      - name: my-cluster
-        bootstrapServers:  "my-cluster-kafka-bootstrap:9092"
-  auth:
-    type: disabled
-  management:
-    health:
-      ldap:
-        enabled: false

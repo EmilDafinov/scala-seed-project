@@ -1,5 +1,7 @@
 package example.dummy_messages
 
+import java.util.UUID
+
 case class WebhookMessage(
   key: String,
   content: String //possibly should be JSON 
@@ -20,22 +22,12 @@ class DummyMessageProducer {
       .map(_ =>
         WebhookMessage(
           key = accounts(random.nextInt(accounts.size - 1)),
-          content = """{ "dummy": "payload" }"""
+          content = s"""{ "dummy": "payload", "field": "${UUID.randomUUID().toString}" }"""
         )
-      )
+      ).map {
+        message =>
+          scribe.info(s"Creating message: $message")
+          message
+      }
   }
-
-//  def produceMessages(implicit mat: Materializer) = {
-//    Source
-//      .fromIterator(() =>
-//        (1 to 100)
-//          .map(_ =>
-//            new ProducerRecord(
-//              "event_stream_1_topic",
-//              "accountId1",
-//              ""
-//            )
-//          ).iterator
-//      ).runWith(messageSink)
-//  }
 }

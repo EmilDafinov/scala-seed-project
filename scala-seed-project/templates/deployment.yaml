@@ -18,9 +18,17 @@ spec:
         app: {{ .Chart.Name }}
     spec:
       initContainers:
+        - name: wait-for-pg
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command: [ 'sh', '-c', 'until nc -vz postgres-service 5433; do echo "Waiting for postgres..."; sleep 3; done;' ]
         - name: flyway
           image: docker.io/library/scala-seed-project-flyway
-          command: ['sh', '-c', 'sleep 5 && flyway migrate']
+          command: ['sh', '-c', 'flyway migrate']
+        - name: wait-for-kafka
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command: [ 'sh', '-c', 'until nc -vz {{ .Values.kafka.cluster.name }}-kafka-bootstrap 9092; do echo "Waiting for kafka..."; sleep 3; done;' ]
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

@@ -6,8 +6,6 @@ import scala.util.{Failure, Success}
 
 object Main extends ApplicationRootModule {
 
-
-
   def main(args: Array[String]): Unit = {
     Http()
       .newServerAt("0.0.0.0", 9000)
