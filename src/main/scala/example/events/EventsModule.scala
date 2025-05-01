@@ -13,28 +13,30 @@ trait EventsModule {
 
   lazy val repo = new EventRepository(dbConfig)
 
-
-  Consumer
-    .plainSource(
-      settings = ConsumerSettings(
-        system = system,
-        keyDeserializer = new StringDeserializer,
-        valueDeserializer = new StringDeserializer,
-      )
-        .withGroupId(consumerGroupId)
-        .withBootstrapServers(bootstrapServers),
-      subscription = topics(eventsTopic)
+  (0 to 1)
+    .map { clientId =>
+      Consumer
+        .plainSource(
+          settings = ConsumerSettings(
+            system = system,
+            keyDeserializer = new StringDeserializer,
+            valueDeserializer = new StringDeserializer,
+          )
+            .withGroupId(consumerGroupId)
+            .withClientId(clientId.toString)
+            .withBootstrapServers(bootstrapServers.mkString(",")),
+          subscription = topics(eventsTopic)
+        )
+        .mapAsync(parallelism = 1) { record =>
+          scribe.info(s"Reading record $record")
+          repo.store(
+            accountId = record.key(),
+            content = record.value()
+          )
+        }
+    }
+    .foreach(
+      _.runWith(Sink.ignore)
+        .onComplete(_ => System.exit(1))
     )
-    .mapAsync(parallelism = 1) { record =>
-      scribe.info(s"Reading record $record")
-      repo.store(
-        accountId = record.key(),
-        content = record.value()
-      )
-    }
-    .runWith(Sink.ignore)
-    .onComplete {
-      _ => System.exit(1)
-    }
-
 }

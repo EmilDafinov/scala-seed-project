@@ -10,12 +10,13 @@ import org.apache.pekko.kafka.scaladsl.Producer
 import org.apache.pekko.stream.scaladsl.Sink
 
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 trait KafkaModule {
   this: AkkaDependenciesModule with ConfigModule with EventsModule =>
 
   private val kafkaConfig = conf.getConfig("kafka")
-  lazy val bootstrapServers = kafkaConfig.getStringList("bootstrap_servers").toArray().mkString(",")
+  lazy val bootstrapServers = kafkaConfig.getStringList("bootstrap_servers").asScala
   lazy val eventsTopic = kafkaConfig.getString("events_topic")
   lazy val consumerGroupId = kafkaConfig.getString("consumer_group_id")
 
@@ -26,6 +27,6 @@ trait KafkaModule {
         system = system,
         keySerializer = new StringSerializer,
         valueSerializer = new StringSerializer
-      ).withBootstrapServers(bootstrapServers)
+      ).withBootstrapServers(bootstrapServers.mkString(","))
     )
 }
