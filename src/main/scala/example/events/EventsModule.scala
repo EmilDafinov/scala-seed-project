@@ -2,38 +2,51 @@ package example.events
 
 import example.kafka.KafkaModule
 import example.{AkkaDependenciesModule, DatabaseDependenciesModule}
-import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.pekko.kafka.ConsumerSettings
-import org.apache.pekko.kafka.Subscriptions.topics
-import org.apache.pekko.kafka.scaladsl.Consumer
 import org.apache.pekko.stream.scaladsl.Sink
 
 trait EventsModule {
   this: AkkaDependenciesModule with DatabaseDependenciesModule with KafkaModule =>
 
-  lazy val repo = new EventRepository(dbConfig)
+  private lazy val eventGroupsTopic = kafkaConfig.getString("keys")
+  private lazy val eventsConsumerGroupId = kafkaConfig.getString("events_consumer_group_id")
+  private lazy val keysConsumerGroupId = kafkaConfig.getString("event_keys_consumer_group_id")
+
+  lazy val repo: EventRepository = new EventRepository(dbConfig)
+
+  lazy val eventGroupProcessor: EventGroupProcessorService = new EventGroupProcessorService(
+    eventDeliveryService = new EvenDeliveryService,
+    eventRepository = repo
+  )
+
+  val eventProcessors = (0 to 1)
+    .map { clientId =>
+      TopicConsumer(
+        bootstrapServers = bootstrapServers,
+        consumerGroupId = eventsConsumerGroupId,
+        clientId = clientId.toString,
+        topic = eventsTopic
+      )
+      .via(
+        EventToEventGroupFlow(
+          repo = repo,
+          eventGroupsTopic = eventGroupsTopic
+        )
+      )
+    }
+    .foreach(
+      _.runWith(kafkaProducer)
+        .onComplete(_ => System.exit(1))
+    )
 
   (0 to 1)
     .map { clientId =>
-      Consumer
-        .plainSource(
-          settings = ConsumerSettings(
-            system = system,
-            keyDeserializer = new StringDeserializer,
-            valueDeserializer = new StringDeserializer,
-          )
-            .withGroupId(consumerGroupId)
-            .withClientId(clientId.toString)
-            .withBootstrapServers(bootstrapServers.mkString(",")),
-          subscription = topics(eventsTopic)
-        )
-        .mapAsync(parallelism = 1) { record =>
-          scribe.info(s"Reading record $record")
-          repo.store(
-            accountId = record.key(),
-            content = record.value()
-          )
-        }
+      TopicConsumer(
+        bootstrapServers = bootstrapServers,
+        consumerGroupId = keysConsumerGroupId,
+        clientId = clientId.toString,
+        topic = eventGroupsTopic
+      )
+      .via(EventGroupProcessingFlow(eventGroupProcessor))
     }
     .foreach(
       _.runWith(Sink.ignore)

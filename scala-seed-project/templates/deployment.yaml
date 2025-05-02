@@ -41,6 +41,10 @@ spec:
               value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
             - name: JAVA_OPTS
               value: "-server -Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m -Dconfig.file=/config/application.conf"
+            - name: EVENTS_TOPIC
+              value: "{{ .Values.kafka.topics.events }}"
+            - name: EVENT_KEYS_TOPIC
+              value: "{{ .Values.kafka.topics.keys }}"
           ports:
             - containerPort: 9000
               name: service-port

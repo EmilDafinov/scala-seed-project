@@ -1,7 +1,19 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: my-topic-1
+  name: {{ .Values.kafka.topics.keys }}
+  labels:
+    strimzi.io/cluster: {{ .Values.kafka.cluster.name }}
+spec:
+  partitions: 2
+  replicas: 2
+
+---
+
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: {{ .Values.kafka.topics.events }}
   labels:
     strimzi.io/cluster: {{ .Values.kafka.cluster.name }}
 spec:

@@ -4,6 +4,7 @@ import example.dummy_messages.DummyMessageProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.pekko.Done
 import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.model.StatusCodes.Accepted
 import org.apache.pekko.http.scaladsl.model.{HttpResponse, StatusCodes}
 import org.apache.pekko.http.scaladsl.server.Directives._
 import org.apache.pekko.http.scaladsl.server.Route
@@ -22,13 +23,12 @@ object MessageProducerController {
     (path("messages")
       & post) {
       complete(
-        Source
-          .fromIterator(() => producer.dummyMessages().iterator)
+        Source(producer.dummyMessages())
           .map { msg =>
-            new ProducerRecord(topic, msg.key, msg.content)
+            new ProducerRecord(topic, msg.eventGroup, msg.content)
           }
           .runWith(messageSink)
-          .map(_ => HttpResponse(status = StatusCodes.Accepted))
+          .map(_ => HttpResponse(status = Accepted))
       )
     }
   }

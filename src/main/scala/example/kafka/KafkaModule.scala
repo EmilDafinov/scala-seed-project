@@ -1,6 +1,6 @@
 package example.kafka
 
-import example.events.EventsModule
+import com.typesafe.config.Config
 import example.{AkkaDependenciesModule, ConfigModule}
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
@@ -13,15 +13,14 @@ import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 
 trait KafkaModule {
-  this: AkkaDependenciesModule with ConfigModule with EventsModule =>
+  this: AkkaDependenciesModule with ConfigModule =>
 
-  private val kafkaConfig = conf.getConfig("kafka")
-  lazy val bootstrapServers = kafkaConfig.getStringList("bootstrap_servers").asScala
-  lazy val eventsTopic = kafkaConfig.getString("events_topic")
-  lazy val consumerGroupId = kafkaConfig.getString("consumer_group_id")
+  val kafkaConfig: Config = conf.getConfig("kafka")
+  val eventsTopic: String = kafkaConfig.getString("events")
+  val bootstrapServers: List[String] = kafkaConfig.getStringList("bootstrap_servers").asScala.toList
 
   scribe.info(s"Kafka bootstrap servers list: [$bootstrapServers]")
-  lazy val producer: Sink[ProducerRecord[String, String], Future[Done]] = Producer
+  lazy val kafkaProducer: Sink[ProducerRecord[String, String], Future[Done]] = Producer
     .plainSink(
       ProducerSettings(
         system = system,

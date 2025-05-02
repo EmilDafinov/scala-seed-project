@@ -22,6 +22,9 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 kafka:
+  topics:
+    events: events
+    keys: keys
   cluster:
     name: my-cluster
 

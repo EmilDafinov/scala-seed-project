@@ -1,4 +1,5 @@
 package example.http.routes
+
 import example.AkkaDependenciesModule
 import example.dummy_messages.DummyMessageProducerModule
 import example.kafka.KafkaModule
@@ -10,10 +11,11 @@ trait HttpControllersModule {
     with DummyMessageProducerModule
     with KafkaModule =>
 
-  val routes: Route = HealthController() ~
-    MessageProducerController(
-      producer = dummyMessagedProducer,
-      messageSink = producer,
-      topic = eventsTopic
-    )
+  val routes: Route =
+    HealthController() ~
+      MessageProducerController(
+        producer = dummyMessagedProducer,
+        messageSink = kafkaProducer,
+        topic = eventsTopic
+      )
 }
