@@ -21,9 +21,16 @@ spec:
         - name: wait-for-pg
           image: busybox:latest
           imagePullPolicy: IfNotPresent
-          command: [ 'sh', '-c', 'until nc -vz postgres-service 5433; do echo "Waiting for postgres..."; sleep 3; done;' ]
+          command: [ 'sh', '-c', 'until nc -vz {{ .Values.postgres.service.name }} {{ .Values.postgres.service.port }}; do echo "Waiting for postgres..."; sleep 3; done;' ]
         - name: flyway
           image: docker.io/library/scala-seed-project-flyway
+          env:
+            - name: FLYWAY_USER
+              value: {{ .Values.postgres.user }}
+            - name: FLYWAY_PASSWORD
+              value: {{ .Values.postgres.password }}
+            - name: FLYWAY_URL
+              value: "jdbc:postgresql://{{ .Values.postgres.service.name }}:{{ .Values.postgres.service.port }}/postgres"
           command: ['sh', '-c', 'flyway migrate']
         - name: wait-for-kafka
           image: busybox:latest
@@ -42,9 +49,9 @@ spec:
             - name: JAVA_OPTS
               value: "-server -Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m -Dconfig.file=/config/application.conf"
             - name: EVENTS_TOPIC
-              value: "{{ .Values.kafka.topics.events }}"
-            - name: EVENT_KEYS_TOPIC
-              value: "{{ .Values.kafka.topics.keys }}"
+              value: {{ .Values.kafka.topics.events }}
+            - name: EVENT_GROUPS_TOPIC
+              value: {{ .Values.kafka.topics.event_groups }}
           ports:
             - containerPort: 9000
               name: service-port
