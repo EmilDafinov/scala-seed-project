@@ -11,25 +11,30 @@ import scala.util.control.NonFatal
 /**
  * Processes the unpublished events for a give
  */
-class EventGroupProcessorService(
+class EventGroupSyncService(
   eventDeliveryService: EvenDeliveryService,
-  eventRepository: EventRepository
+  eventRepository: EventRepository,
+  maxBatchSize: Int = 10
+
 )(implicit ec: ExecutionContext, system: ActorSystem) {
+
 
   /**
    * Attempt to deliver as many of the undelivered messages
    * from a single event group as possible
    *
    * @param eventGroup the id of the event group whose messages we want to process
-   * @return
+   * @return whether or not all messages in the group were processed
    */
-  def syncEventGroup(eventGroup: String): Future[Unit] = {
+  def syncEventGroup(eventGroup: String): Future[Boolean] = {
     for {
-      unsentEvents <- eventRepository.readUnsentFor(eventGroup)
+      undeliveredEventsBatch <- eventRepository.readUnsentFor(
+        eventGroup = eventGroup,
+        batchSize = maxBatchSize
+      )
 
-      //TODO: This stream should terminate on failure to deliver a message
-      _ <- Source(unsentEvents)
-        .map { case (currentEventId, unsentEvent) =>
+      batchSuccessfullyDelivered <- Source(undeliveredEventsBatch)
+        .mapAsync(1) { case (currentEventId, unsentEvent) =>
           eventDeliveryService
             .deliverEvent(
               eventId = currentEventId,
@@ -37,7 +42,7 @@ class EventGroupProcessorService(
             )
             .recoverWith {
               case NonFatal(ex) =>
-                scribe.error(s"Failed sending event with id $currentEventId", ex)
+                scribe.error(s"Failed sending event with id $currentEventId for group $eventGroup", ex)
                 eventRepository.markGroupEventsAsSuccessful(
                   eventGroup = eventGroup,
                   untilEventId = currentEventId - 1
@@ -46,13 +51,20 @@ class EventGroupProcessorService(
             }
         }
         .runWith(ignore)
-      _ <- unsentEvents.lastOption
+        .map(_ => true)
+        .recover(_ => false)
+
+      _ <- undeliveredEventsBatch.lastOption
+        .filter(_ => batchSuccessfullyDelivered)
         .map { case (lastEventId, _) =>
           eventRepository.markGroupEventsAsSuccessful(
             eventGroup = eventGroup,
             untilEventId = lastEventId
           )
         }.getOrElse(Future.successful())
-    } yield ()
+
+      eventGroupHasMoreUndeliveredMessages = !batchSuccessfullyDelivered || undeliveredEventsBatch.size == maxBatchSize
+      _ = scribe.info(s"$eventGroup has more undelivered messages: $eventGroupHasMoreUndeliveredMessages")
+    } yield eventGroupHasMoreUndeliveredMessages
   }
 }

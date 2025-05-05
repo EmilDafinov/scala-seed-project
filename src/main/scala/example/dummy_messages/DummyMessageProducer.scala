@@ -16,7 +16,7 @@ class DummyMessageProducer {
     "account4",
     "account5",
   )
-  def dummyMessages(count: Int = 100): Seq[EventToDeliver] = {
+  def dummyMessages(count: Int): Seq[EventToDeliver] = {
     (0 until  count)
       .map { _ =>
         val eventGroupId = eventGroups(random.nextInt(eventGroups.size))

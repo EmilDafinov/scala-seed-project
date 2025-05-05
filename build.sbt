@@ -8,6 +8,7 @@ ThisBuild / organizationName := "example"
 
 val scribeVersion = "3.16.1"
 val pekkoVersion = "1.1.0"
+val scalaTestVersion = "3.2.19"
 
 lazy val root = (project in file("."))
   .enablePlugins(DockerPlugin, AshScriptPlugin)
@@ -26,7 +27,9 @@ lazy val root = (project in file("."))
       "org.slf4j" % "slf4j-nop" % "1.7.26",
       "com.typesafe.slick" %% "slick-hikaricp" % "3.6.0",
       "org.postgresql" % "postgresql" % "42.7.5",
-      munit % Test,
+      "org.scalactic" %% "scalactic" % scalaTestVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+      "org.scalatestplus" %% "mockito-5-12" % "3.2.19.0" % Test
     ),
     dockerBaseImage := "amazoncorretto:11-alpine-jdk",
     dockerExposedPorts := Seq(9000, 5005),

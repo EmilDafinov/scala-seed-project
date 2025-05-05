@@ -14,7 +14,8 @@ build:
       custom:
         dependencies:
           paths:
-            - "src/main" # this is the source directory that will be watched for changes
+            - "src/main/resources"
+            - "src/main/scala"
         buildCommand: |
           ./src/main/script/buildApplicationImage.sh
 
