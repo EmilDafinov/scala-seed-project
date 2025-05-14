@@ -26,7 +26,7 @@ class EventGroupSyncService(
    * @param eventGroup the id of the event group whose messages we want to process
    * @return whether or not all messages in the group were processed
    */
-  def syncEventGroup(eventGroup: String): Future[Boolean] = {
+  def syncEventGroup(eventGroup: String): Future[Boolean] =
     for {
       undeliveredEventsBatch <- eventRepository.readUnsentFor(
         eventGroup = eventGroup,
@@ -66,5 +66,4 @@ class EventGroupSyncService(
       eventGroupHasMoreUndeliveredMessages = !batchSuccessfullyDelivered || undeliveredEventsBatch.size == maxBatchSize
       _ = scribe.info(s"$eventGroup has more undelivered messages: $eventGroupHasMoreUndeliveredMessages")
     } yield eventGroupHasMoreUndeliveredMessages
-  }
 }

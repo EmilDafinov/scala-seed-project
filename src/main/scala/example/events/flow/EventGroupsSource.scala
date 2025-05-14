@@ -11,7 +11,7 @@ object EventGroupsSource {
 
   def apply(
              bootstrapServers: Iterable[String],
-             keysConsumerGroupId: String,
+             eventGroupsConsumerGroupId: String,
              eventGroupsTopic: String
            )(implicit system: ActorSystem): Source[String, Consumer.Control] = {
     Consumer
@@ -21,7 +21,7 @@ object EventGroupsSource {
           keyDeserializer = new StringDeserializer,
           valueDeserializer = new StringDeserializer,
         )
-          .withGroupId(keysConsumerGroupId)
+          .withGroupId(eventGroupsConsumerGroupId)
           .withClientId(2.toString)
           .withBootstrapServers(bootstrapServers.mkString(",")),
         subscription = topics(eventGroupsTopic)
