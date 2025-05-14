@@ -1,11 +1,11 @@
 package example.events
 
-import com.typesafe.config.Config
-import example.events.flow.{EventGroupProcessingFlow, EventGroupSink, EventGroupsSource, EventStoringFlow, EventsSource}
-import example.{AkkaDependenciesModule, ConfigModule}
-import org.apache.pekko.{Done, NotUsed}
+import com.typesafe.config.{Config, ConfigFactory}
+import example.AkkaDependenciesModule
+import example.events.flow._
 import org.apache.pekko.kafka.scaladsl.Consumer
 import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
+import org.apache.pekko.{Done, NotUsed}
 import slick.basic.DatabaseConfig
 import slick.jdbc.PostgresProfile
 
@@ -13,11 +13,12 @@ import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 
 trait EventsModule {
-  this: AkkaDependenciesModule with ConfigModule =>
+  this: AkkaDependenciesModule =>
 
   lazy val dbConfig = DatabaseConfig.forConfig[PostgresProfile]("postgres")
 
-  private val kafkaConfig: Config = conf.getConfig("kafka")
+  private val config: Config = ConfigFactory.load()
+  private val kafkaConfig: Config = config.getConfig("kafka")
   val eventsTopic: String = kafkaConfig.getString("events")
   val bootstrapServers: List[String] = kafkaConfig.getStringList("bootstrap_servers").asScala.toList
 
@@ -46,7 +47,7 @@ trait EventsModule {
 
   val eventGroupsSource: Source[String, Consumer.Control] = EventGroupsSource(
     bootstrapServers = bootstrapServers,
-    keysConsumerGroupId = eventGroupsConsumerGroupId,
+    eventGroupsConsumerGroupId = eventGroupsConsumerGroupId,
     eventGroupsTopic = eventGroupsTopic
   )
 
