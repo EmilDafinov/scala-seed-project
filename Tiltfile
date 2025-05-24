@@ -1,3 +1,4 @@
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
 docker_build(
     ref = 'docker.io/library/scala-seed-project-flyway',
     context = '.',
@@ -6,26 +7,25 @@ docker_build(
 )
 custom_build(
   'docker.io/library/scala-seed-project',
-  'sh ./src/main/script/buildApplicationImage.sh $EXPECTED_REF',
+  'sh ./src/main/script/buildApplicationImage_tilt.sh $EXPECTED_TAG',
   ['./src/main/']
 )
 
 
-load('ext://helm_resource', 'helm_resource', 'helm_repo')
-helm_repo('strimzi', 'https://strimzi.io/charts')
-helm_repo('kafka-ui', 'https://ui.charts.kafbat.io/')
+helm_repo('strimzi-repo', 'https://strimzi.io/charts')
+helm_repo('kafka-ui-repo', 'https://ui.charts.kafbat.io/')
 
 helm_resource(
     'strimzi-kafka-operator',
-    'strimzi/strimzi-kafka-operator',
-    resource_deps=['strimzi'],
+    'strimzi-repo/strimzi-kafka-operator',
+    resource_deps=['strimzi-repo'],
     flags=['--version=0.46.0']
 )
 
 helm_resource(
-    'kafka-ui-res',
-    'kafka-ui/kafka-ui',
-    resource_deps=['kafka-ui'],
+    'kafka-ui',
+    'kafka-ui-repo/kafka-ui',
+    resource_deps=['kafka-ui-repo'],
     deps=[
         './kafka-ui-values.yaml'
     ],
@@ -53,6 +53,6 @@ k8s_resource(
   port_forwards=['5433:5432']
 )
 k8s_resource(
-  workload='kafka-ui-res',
+  workload='kafka-ui',
   port_forwards=['8080']
 )

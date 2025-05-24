@@ -1,0 +1,1 @@
+sbt "set version := \"$1\"" "Docker / publishLocal"
