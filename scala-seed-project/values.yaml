@@ -43,3 +43,6 @@ postgres:
 #    health:
 #      ldap:
 #        enabled: false
+
+# Port forwarding with skaffold requires additional k8s resources to be created
+scaffold: false

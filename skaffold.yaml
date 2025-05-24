@@ -17,7 +17,7 @@ build:
             - "src/main/resources"
             - "src/main/scala"
         buildCommand: |
-          ./src/main/script/buildApplicationImage.sh
+          ./src/main/script/buildApplicationImage.sh $IMAGE
 
 deploy:
   helm:
@@ -26,3 +26,4 @@ deploy:
         chartPath: scala-seed-project
         setValueTemplates:
           project.rootdir: "{{.PWD}}"
+          scaffold: true

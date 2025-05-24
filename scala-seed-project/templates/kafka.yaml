@@ -72,3 +72,8 @@ spec:
   entityOperator:
     topicOperator: {}
     userOperator: {}
+    template:
+      topicOperatorContainer:
+        env:
+          - name: STRIMZI_USE_FINALIZERS
+            value: "false"
