@@ -7,7 +7,7 @@ docker_build(
 )
 custom_build(
   'docker.io/library/scala-seed-project',
-  'sh ./src/main/script/buildApplicationImage_tilt.sh $EXPECTED_TAG',
+  'sbt "set version := \\"$EXPECTED_TAG\\"" Docker/publishLocal',
   ['./src/main/']
 )
 
