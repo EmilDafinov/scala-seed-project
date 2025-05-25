@@ -15,6 +15,11 @@ class EventRepositoryTest extends UnitTestSpec {
     dbConfig.db.run(sqlu"DELETE FROM events")
   }
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    dbConfig.db.close()
+  }
+
   "EventRepository" should {
     "store an event and read it back " in {
       Given("a test event group and a dummy event")

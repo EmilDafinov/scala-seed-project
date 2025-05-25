@@ -6,9 +6,12 @@ docker_build(
     dockerfile = 'flyway/Dockerfile'
 )
 custom_build(
-  'docker.io/library/scala-seed-project',
-  'sbt "set version := \\"$EXPECTED_TAG\\"" Docker/publishLocal',
-  ['./src/main/']
+  ref = 'docker.io/library/scala-seed-project',
+  env = {
+    'SBT_NATIVE_CLIENT': 'true'
+  },
+  command = 'sbt "set version := \\"$EXPECTED_TAG\\";Docker/publishLocal" ',
+  deps = ['./src/main/']
 )
 
 
@@ -59,5 +62,8 @@ k8s_resource(
 local_resource(
     name = 'unit_tests',
     cmd = 'sbt test',
+    env = {
+        'SBT_NATIVE_CLIENT': 'true'
+    },
     deps = ['./src/main/', './src/test/']
 )

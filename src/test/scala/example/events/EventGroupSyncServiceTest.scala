@@ -20,6 +20,7 @@ trait UnitTestSpec extends AnyWordSpec
   with Matchers
   with ScalaFutures
   with BeforeAndAfterEach
+  with BeforeAndAfterAll
   with MockitoSugar
 
 class EventGroupSyncServiceTest extends UnitTestSpec {
