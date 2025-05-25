@@ -1,7 +1,7 @@
 package example.events
 
 import org.apache.pekko.actor.ActorSystem
-import org.mockito.ArgumentMatchers.{anyLong, anyString}
+import org.mockito.ArgumentMatchers.{any, anyLong, anyString}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers, Mockito}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatest._
@@ -11,7 +11,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
 
@@ -84,7 +84,7 @@ class EventGroupSyncServiceTest extends UnitTestSpec {
         eventDeliveryServiceMock.deliverEvent(
           eventId = anyLong(),
           eventContent = anyString()
-        )
+        )(any[ExecutionContext])
       } thenReturn Future.successful()
 
       When("trying to sync the test group")
@@ -204,7 +204,7 @@ class EventGroupSyncServiceTest extends UnitTestSpec {
         eventDeliveryServiceMock.deliverEvent(
           eventId = anyLong(),
           eventContent = anyString()
-        )
+        )(any[ExecutionContext])
       } thenReturn Future.successful()
 
       When("trying to sync the test group")

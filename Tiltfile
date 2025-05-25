@@ -56,3 +56,8 @@ k8s_resource(
   workload='kafka-ui',
   port_forwards=['8080']
 )
+local_resource(
+    name = 'unit_tests',
+    cmd = 'sbt test',
+    deps = ['./src/main/', './src/test/']
+)
