@@ -30,7 +30,7 @@ spec:
             - name: FLYWAY_PASSWORD
               value: {{ .Values.postgres.password }}
             - name: FLYWAY_URL
-              value: "jdbc:postgresql://{{ .Values.postgres.service.name }}:{{ .Values.postgres.service.port }}/postgres"
+              value: "jdbc:postgresql://{{ .Values.postgres.service.name }}:{{ .Values.postgres.service.port }}/postgres?ApplicationName=Flyway"
           command: ['sh', '-c', 'flyway migrate']
         - name: wait-for-kafka
           image: busybox:latest
@@ -52,6 +52,16 @@ spec:
               value: {{ .Values.kafka.topics.events }}
             - name: EVENT_GROUPS_TOPIC
               value: {{ .Values.kafka.topics.event_groups }}
+            - name: DB_HOST
+              value: {{ .Values.postgres.service.name }}
+            - name: DB_PORT
+              value: "{{ .Values.postgres.service.port }}"
+            - name: DB_USER
+              value: {{ .Values.postgres.user }}
+            - name: DB_PASSWORD
+              value: {{ .Values.postgres.password }}
+            - name: KAFKA_BOOTSTRAP_SERVER
+              value: "{{ .Values.kafka.cluster.name }}-kafka-bootstrap:9092"
           ports:
             - containerPort: 9000
               name: service-port

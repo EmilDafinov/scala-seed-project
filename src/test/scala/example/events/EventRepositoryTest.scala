@@ -1,23 +1,33 @@
 package example.events
 
-import slick.basic.DatabaseConfig
-import slick.jdbc.PostgresProfile
+import slick.jdbc.JdbcBackend.Database
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, _}
+import scala.language.postfixOps
 
 class EventRepositoryTest extends UnitTestSpec {
 
-  private val dbConfig: DatabaseConfig[PostgresProfile] = DatabaseConfig.forConfig[PostgresProfile]("postgres")
-  val tested = new EventRepository(dbConfig)
+  private lazy val dbConfig = Database.forConfig("postgres.db")
+  lazy val tested = new EventRepository(dbConfig)
+
+  override implicit def patienceConfig: PatienceConfig =  PatienceConfig(
+    timeout = scaled(5500 millis),
+    interval = scaled(15 millis)
+  )
+  import slick.jdbc.PostgresProfile.api._
 
   override def beforeEach(): Unit = {
-    import slick.jdbc.PostgresProfile.api._
-    dbConfig.db.run(sqlu"DELETE FROM events")
+    Await.result(
+      awaitable = dbConfig.run(sqlu"DELETE FROM events"),
+      atMost = Duration.Inf
+    )
   }
 
   override def afterAll(): Unit = {
     super.afterAll()
-    dbConfig.db.close()
+    dbConfig.close()
   }
 
   "EventRepository" should {

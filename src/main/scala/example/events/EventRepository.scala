@@ -1,13 +1,11 @@
 package example.events
 
-import slick.basic.DatabaseConfig
-import slick.jdbc.PostgresProfile
+import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api._
-
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
-class EventRepository(dbConfig: DatabaseConfig[PostgresProfile])(implicit ec: ExecutionContext) {
+class EventRepository(dbConfig: Database)(implicit ec: ExecutionContext) {
 
   /**
    * Stores the content of an event for a given event group.
@@ -20,7 +18,7 @@ class EventRepository(dbConfig: DatabaseConfig[PostgresProfile])(implicit ec: Ex
    */
   def storeEvent(eventGroup: String, content: String): Future[Int] = {
     scribe.info(s"Storing record $content for group $eventGroup")
-    dbConfig.db.run(
+    dbConfig.run(
       sqlu"""
         INSERT INTO events (event_group, content, external_id)
         VALUES ($eventGroup, $content ::jsonb, ${UUID.randomUUID().toString}:: uuid)
@@ -35,7 +33,7 @@ class EventRepository(dbConfig: DatabaseConfig[PostgresProfile])(implicit ec: Ex
    *         (in ascending order, by id)
    */
   def readUnsentFor(eventGroup: String, batchSize: Int): Future[Vector[(Long, String)]] =
-    dbConfig.db.run(
+    dbConfig.run(
       sql"""
         SELECT id, content
         FROM events
@@ -55,7 +53,7 @@ class EventRepository(dbConfig: DatabaseConfig[PostgresProfile])(implicit ec: Ex
    * @return
    */
   def markGroupEventsAsSuccessful(eventGroup: String, untilEventId: Long): Future[Unit] =
-    dbConfig.db.run(
+    dbConfig.run(
       sqlu"""
         UPDATE events
         SET delivered = TRUE

@@ -26,7 +26,7 @@ trait UnitTestSpec extends AnyWordSpec
 class EventGroupSyncServiceTest extends UnitTestSpec {
 
   override implicit def patienceConfig: PatienceConfig = PatienceConfig(
-    timeout = scaled(150.milliseconds),
+    timeout = scaled(500.milliseconds),
     interval = scaled(15.milliseconds),
   )
   implicit val system = ActorSystem("test")

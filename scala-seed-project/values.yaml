@@ -1,4 +1,3 @@
-# Default values for webhook-processor.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -9,16 +8,7 @@ image:
   tag: "OVERRIDE-ME"
 
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+
 kafka:
   topics:
     events: events
@@ -27,22 +17,11 @@ kafka:
     name: my-cluster
 
 postgres:
-  user: postgres
-  password: Password1234
+  user: root
+  password: npecKo4u6pu
   service:
     name: postgres-service
     port: 5433
-#yamlApplicationConfig:
-#  kafka:
-#    clusters:
-#      - name: yaml
-#        bootstrapServers:  my-cluster-kafka-bootstrap:9092
-#  auth:
-#    type: disabled
-#  management:
-#    health:
-#      ldap:
-#        enabled: false
 
 # Port forwarding with skaffold requires additional k8s resources to be created
 scaffold: false

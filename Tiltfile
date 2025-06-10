@@ -14,9 +14,7 @@ custom_build(
   deps = ['./src/main/']
 )
 
-
 helm_repo('strimzi-repo', 'https://strimzi.io/charts')
-helm_repo('kafka-ui-repo', 'https://ui.charts.kafbat.io/')
 
 helm_resource(
     'strimzi-kafka-operator',
@@ -24,6 +22,8 @@ helm_resource(
     resource_deps=['strimzi-repo'],
     flags=['--version=0.46.0']
 )
+
+helm_repo('kafka-ui-repo', 'https://ui.charts.kafbat.io/')
 
 helm_resource(
     'kafka-ui',
@@ -47,18 +47,22 @@ k8s_yaml(
         ]
     )
 )
+
 k8s_resource(
   workload='scala-seed-project',
   port_forwards=['9000', '5005']
 )
+
 k8s_resource(
   workload='postgres-deployment',
   port_forwards=['5433:5432']
 )
+
 k8s_resource(
   workload='kafka-ui',
   port_forwards=['8080']
 )
+
 local_resource(
     name = 'unit_tests',
     cmd = 'sbt test',
