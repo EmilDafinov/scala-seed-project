@@ -32,11 +32,13 @@ class EventRepositoryTest extends UnitTestSpec {
 
   "EventRepository" should {
     "store an event and read it back " in {
-      Given("a test event group and a dummy event")
+      Given("a test event group")
       val testEventGroup = "testEventGroup"
+      And("a dummy event")
       val testContent = "{}"
 
-      When("we store a single event and give read it back")
+      When("we store the dummy event in the test event group")
+      And("read a batch of events from the test group")
       val actualEventsRead = (for {
         _ <- tested.storeEvent(eventGroup = testEventGroup, content = testContent)
         eventsRead <- tested.readUnsentFor(eventGroup = testEventGroup, batchSize = 10)
@@ -49,22 +51,26 @@ class EventRepositoryTest extends UnitTestSpec {
     }
 
     "store events and read only up to the specified batch size" in {
-      Given("a test event group and a dummy event")
+      Given("a test event group and an 4 events")
       val testEventGroup = "testEventGroup"
-      val testContent1 = """{"event": 1}"""
-      val testContent2 = """{"event": 2}"""
-      val testContent3 = """{"event": 3}"""
+      val testEvent1 = """{"event": 1}"""
+      val testEvent2 = """{"event": 2}"""
+      val testEvent3 = """{"event": 3}"""
+      val testEventFromAnotherGroup = """{"event": 4}"""
+      val expectedEventBatch = List(testEvent1, testEvent2)
 
-      When("we store a 3 event and give read it back")
-      val actualFirstBatch = (for {
-        _ <- tested.storeEvent(eventGroup = testEventGroup, content = testContent1)
-        _ <- tested.storeEvent(eventGroup = testEventGroup, content = testContent2)
-        _ <- tested.storeEvent(eventGroup = testEventGroup, content = testContent3)
+      When("we store 3 events in the test group and 1 in another group")
+      val actualEventBatchRead = (for {
+        _ <- tested.storeEvent(eventGroup = testEventGroup, content = testEvent1)
+        _ <- tested.storeEvent(eventGroup = testEventGroup, content = testEvent2)
+        _ <- tested.storeEvent(eventGroup = testEventGroup, content = testEvent3)
+        _ <- tested.storeEvent(eventGroup = "some_other_group", content = testEventFromAnotherGroup)
         firstBatch <- tested.readUnsentFor(eventGroup = testEventGroup, batchSize = 2)
-      } yield (firstBatch)).futureValue
+      } yield firstBatch.map(_._2)).futureValue
 
-      Then("the event read should match the event written")
-      actualFirstBatch.map(_._2) should contain theSameElementsInOrderAs List(testContent1, testContent2)
+      Then("the events should be read back in insertion order")
+      And("reading back events from the test group should not exceed the batch size")
+      actualEventBatchRead should contain theSameElementsInOrderAs expectedEventBatch
     }
   }
 }
