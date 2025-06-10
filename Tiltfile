@@ -1,10 +1,12 @@
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
+
 docker_build(
     ref = 'docker.io/library/scala-seed-project-flyway',
     context = '.',
     only=['./flyway/'],
     dockerfile = 'flyway/Dockerfile'
 )
+
 custom_build(
   ref = 'docker.io/library/scala-seed-project',
   env = {
