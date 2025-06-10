@@ -52,6 +52,8 @@ k8s_yaml(
     )
 )
 
+k8s_yaml('kafka-cluster.yaml')
+
 k8s_resource(
   workload='scala-seed-project',
   port_forwards=['9000', '5005'],

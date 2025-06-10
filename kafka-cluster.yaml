@@ -3,7 +3,7 @@ kind: KafkaNodePool
 metadata:
   name: dual-role
   labels:
-    strimzi.io/cluster: {{ .Values.kafka.cluster.name }}
+    strimzi.io/cluster: my-cluster
 spec:
   replicas: 1
   roles:
@@ -22,7 +22,7 @@ spec:
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
-  name: {{ .Values.kafka.cluster.name }}
+  name: my-cluster
   annotations:
     strimzi.io/node-pools: enabled
     strimzi.io/kraft: enabled
