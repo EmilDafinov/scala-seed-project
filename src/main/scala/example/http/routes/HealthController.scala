@@ -7,7 +7,10 @@ import org.apache.pekko.http.scaladsl.server.Route
 
 object HealthController {
 
-  private val pingResponse = HttpResponse(status = OK)
+  private val pingResponse = HttpResponse(
+    status = OK
+    , entity = "Hello!"
+  )
 
   def apply(): Route = {
     (path("health")

@@ -29,7 +29,10 @@ lazy val root = (project in file("."))
       "org.postgresql" % "postgresql" % "42.7.5",
       "org.scalactic" %% "scalactic" % scalaTestVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
-      "org.scalatestplus" %% "mockito-5-12" % "3.2.19.0" % Test
+      "org.scalatestplus" %% "mockito-5-12" % "3.2.19.0" % Test,
+      "io.circe" %% "circe-core" % "0.15.0-M1",
+      "org.scalacheck" %% "scalacheck" % "1.18.1" % Test,
+      "org.mdedetrich" %% "pekko-http-circe" % "1.1.0" % pekkoVersion,
     ),
     dockerBaseImage := "amazoncorretto:11-alpine-jdk",
     dockerExposedPorts := Seq(9000, 5005),
