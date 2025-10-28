@@ -17,9 +17,4 @@ type: application
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 0.1.0
 
-dependencies:
-  - name: strimzi-kafka-operator
-    version: 0.46.0
-    repository: https://strimzi.io/charts
-    condition: scaffold
 

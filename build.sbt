@@ -9,6 +9,7 @@ ThisBuild / organizationName := "example"
 val scribeVersion = "3.16.1"
 val pekkoVersion = "1.1.0"
 val scalaTestVersion = "3.2.19"
+val circeVersion = "0.15.0-M1"
 
 lazy val root = (project in file("."))
   .enablePlugins(DockerPlugin, AshScriptPlugin)
@@ -19,7 +20,6 @@ lazy val root = (project in file("."))
       "org.apache.pekko" %% "pekko-stream" % "1.1.0",
       "org.apache.pekko" %% "pekko-slf4j" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoVersion,
-      "org.apache.pekko" %% "pekko-connectors-kafka" % "1.0.0",
       "com.outr" %% "scribe" % scribeVersion,
       "org.slf4j" % "slf4j-simple" % "2.0.17",
       "com.typesafe" % "config" % "1.4.3",
@@ -30,9 +30,14 @@ lazy val root = (project in file("."))
       "org.scalactic" %% "scalactic" % scalaTestVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
       "org.scalatestplus" %% "mockito-5-12" % "3.2.19.0" % Test,
-      "io.circe" %% "circe-core" % "0.15.0-M1",
+      "io.circe" %% "circe-core" % circeVersion,
+      "io.circe" %% "circe-generic" % circeVersion,
+      "org.typelevel" %% "jawn-parser" % "1.3.2",
       "org.scalacheck" %% "scalacheck" % "1.18.1" % Test,
-      "org.mdedetrich" %% "pekko-http-circe" % "1.1.0" % pekkoVersion,
+      "org.mdedetrich" %% "pekko-http-circe" % pekkoVersion,
+      "org.mdedetrich" %% "pekko-stream-circe" % pekkoVersion,
+      "org.mdedetrich" %% "pekko-http-circe" % pekkoVersion,
+
     ),
     dockerBaseImage := "amazoncorretto:11-alpine-jdk",
     dockerExposedPorts := Seq(9000, 5005),

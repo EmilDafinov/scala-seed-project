@@ -16,32 +16,6 @@ custom_build(
   deps = ['./src/main/']
 )
 
-helm_repo('strimzi-repo', 'https://strimzi.io/charts', labels = ['repositories'])
-
-helm_resource(
-    'strimzi-kafka-operator',
-    'strimzi-repo/strimzi-kafka-operator',
-    resource_deps=['strimzi-repo'],
-    flags=['--version=0.46.0'],
-    labels = ['infra']
-)
-
-helm_repo('kafka-ui-repo', 'https://ui.charts.kafbat.io/', labels = ['repositories'])
-
-helm_resource(
-    'kafka-ui',
-    'kafka-ui-repo/kafka-ui',
-    resource_deps=['kafka-ui-repo'],
-    deps=[
-        './kafka-ui-values.yaml'
-    ],
-    flags=[
-        '--version=1.5.0',
-        '--values=./kafka-ui-values.yaml',
-    ],
-    labels = ['infra']
-)
-
 k8s_yaml(
     helm(
         './scala-seed-project',
@@ -52,8 +26,6 @@ k8s_yaml(
     )
 )
 
-k8s_yaml('kafka-cluster.yaml')
-
 k8s_resource(
   workload='scala-seed-project',
   port_forwards=['9000', '5005'],
@@ -63,12 +35,6 @@ k8s_resource(
 k8s_resource(
   workload='postgres-deployment',
   port_forwards=['5433:5432'],
-  labels = ['infra']
-)
-
-k8s_resource(
-  workload='kafka-ui',
-  port_forwards=['8080'],
   labels = ['infra']
 )
 

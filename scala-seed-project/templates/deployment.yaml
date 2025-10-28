@@ -32,10 +32,6 @@ spec:
             - name: FLYWAY_URL
               value: "jdbc:postgresql://{{ .Values.postgres.service.name }}:{{ .Values.postgres.service.port }}/postgres?ApplicationName=Flyway"
           command: ['sh', '-c', 'flyway migrate']
-        - name: wait-for-kafka
-          image: busybox:latest
-          imagePullPolicy: IfNotPresent
-          command: [ 'sh', '-c', 'until nc -vz {{ .Values.kafka.cluster.name }}-kafka-bootstrap 9092; do echo "Waiting for kafka..."; sleep 3; done;' ]
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -48,10 +44,6 @@ spec:
               value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
             - name: JAVA_OPTS
               value: "-server -Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m -Dconfig.file=/config/application.conf"
-            - name: EVENTS_TOPIC
-              value: {{ .Values.kafka.topics.events }}
-            - name: EVENT_GROUPS_TOPIC
-              value: {{ .Values.kafka.topics.event_groups }}
             - name: DB_HOST
               value: {{ .Values.postgres.service.name }}
             - name: DB_PORT
@@ -60,8 +52,6 @@ spec:
               value: {{ .Values.postgres.user }}
             - name: DB_PASSWORD
               value: {{ .Values.postgres.password }}
-            - name: KAFKA_BOOTSTRAP_SERVER
-              value: "{{ .Values.kafka.cluster.name }}-kafka-bootstrap:9092"
           ports:
             - containerPort: 9000
               name: service-port
