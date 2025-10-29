@@ -1,16 +1,24 @@
 package example.http.routes
 
 import example.AkkaDependenciesModule
-import example.events.EventsModule
-import example.shortener.EventShortenerService
+import example.shortener.{EventShortenerService, HashGenerator, ShortUrlRepository}
 import org.apache.pekko.http.scaladsl.server.Directives._
 import org.apache.pekko.http.scaladsl.server.Route
+import slick.jdbc.JdbcBackend.Database
+
+import scala.util.Random
 
 trait HttpControllersModule {
-  this: AkkaDependenciesModule
-    with EventsModule =>
+  this: AkkaDependenciesModule =>
 
-  private val service = new EventShortenerService
+  lazy val db = Database.forConfig(
+    path = "postgres.db"
+  )
+
+  private val repository = new ShortUrlRepository(db)
+
+  private val service = new EventShortenerService(repository, new HashGenerator(new Random()))
+
   val routes: Route =
     HealthController() ~ UrlShortenerController(service)
 }
