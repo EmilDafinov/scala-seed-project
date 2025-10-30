@@ -23,7 +23,7 @@ spec:
           imagePullPolicy: IfNotPresent
           command: [ 'sh', '-c', 'until nc -vz {{ .Values.postgres.service.name }} {{ .Values.postgres.service.port }}; do echo "Waiting for postgres..."; sleep 3; done;' ]
         - name: flyway
-          image: docker.io/library/scala-seed-project-flyway
+          image: "docker.io/library/scala-seed-project-flyway:{{ .Values.image.tag }}"
           env:
             - name: FLYWAY_USER
               value: {{ .Values.postgres.user }}
