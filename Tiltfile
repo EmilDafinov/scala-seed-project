@@ -36,6 +36,11 @@ k8s_resource(
   labels = ['infra']
 )
 
+k8s_resource(
+  workload='redis',
+  labels = ['infra']
+)
+
 local_resource(
     name = 'unit_tests',
     cmd = 'sbt test',
