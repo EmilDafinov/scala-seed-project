@@ -3,9 +3,13 @@ package example.shortener
 import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
-class UrlShortenerService(repository: ShortUrlRepository, hashGenerator: HashGenerator)(implicit ec: ExecutionContext) {
+class UrlShortenerService(
+  databaseRepository: ShortUrlRepository,
+  cacheClient: RedisUrlResolver,
+  hashGenerator: HashGenerator,
+)(implicit ec: ExecutionContext) {
 
-  //How many times do we retry re-generating a shortUrl in case of collissions
+  //How many times do we retry re-generating a shortUrl in case of collisions
   private val MAX_RETRIES = 10
 
   private def retry[A](future: => Future[A], remainingAttempts: Int): Future[A] =
@@ -15,7 +19,7 @@ class UrlShortenerService(repository: ShortUrlRepository, hashGenerator: HashGen
       case otherError => Future.failed(otherError)
     }
 
-  final def shorten(longUrl: URL): Future[String] = {
+  def shorten(longUrl: URL): Future[String] = {
     for {
       urlHash <- hashGenerator.generateHash(longUrl)
       insertedWithoutDuplication <- retry(
@@ -26,10 +30,23 @@ class UrlShortenerService(repository: ShortUrlRepository, hashGenerator: HashGen
           //which are currently a 7 character string, so we can come up with a more efficient way of generating
           //shortUrls
           shortUrl <- hashGenerator.generateShortUrl()
-          shortUrlInserted <- repository.tryInsert(shortUrl, urlHash, longUrl)
+          shortUrlInserted <- databaseRepository.tryInsert(shortUrl, urlHash, longUrl)
         } yield shortUrlInserted,
         MAX_RETRIES
       )
     } yield insertedWithoutDuplication
+  }
+
+  def resolve(shortUrl: String): Future[Option[URL]] = {
+    cacheClient.resolve(shortUrl)
+      .flatMap {
+        case Some(urlFromCache) =>
+          Future.successful(Some(urlFromCache))
+        case _ =>
+          for {
+            maybeExistingUrl <- databaseRepository.resolve(shortUrl = shortUrl)
+            _ = maybeExistingUrl.foreach(url => cacheClient.insert(shortUrl = shortUrl, fullUrl = url))
+          } yield maybeExistingUrl
+      }
   }
 }

@@ -1,9 +1,5 @@
 package example.shortener
 
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, GivenWhenThen}
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api._
 
@@ -11,8 +7,6 @@ import java.net.URL
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-
-
 
 class ShortUrlRepositoryTest extends UnitTestSpec {
 
@@ -37,7 +31,7 @@ class ShortUrlRepositoryTest extends UnitTestSpec {
       When("we attempt shorten the URL and look it up by the shortUrl code")
       val eventualResult = for {
         shortUrl <- tested.tryInsert(shortUrlAtFirstPersistenceAttempt, testUrlHash, testUrl)
-        urlReadBack <- tested.resolveFullUrl(shortUrl)
+        urlReadBack <- tested.resolve(shortUrl)
       } yield urlReadBack
 
       Then("the initial URL should be read back")

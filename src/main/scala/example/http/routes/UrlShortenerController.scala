@@ -3,7 +3,7 @@ package example.http.routes
 import example.http.models.ShortUrlResponse
 import example.json.HttpUnmarshallers._
 import example.json.JsonSupport._
-import example.shortener.{EventShortenerService, ShortUrlRepository}
+import example.shortener.{UrlShortenerService, ShortUrlRepository}
 import org.apache.pekko.http.scaladsl.model.ContentTypes.`text/html(UTF-8)`
 import org.apache.pekko.http.scaladsl.model.HttpEntity.Empty
 import org.apache.pekko.http.scaladsl.model.StatusCodes.MovedPermanently
@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object UrlShortenerController {
 
-  def apply(shortenerService: EventShortenerService, repository: ShortUrlRepository): Route = {
+  def apply(shortenerService: UrlShortenerService): Route = {
     (path("shorten")
       & post
       & extractHost
@@ -33,8 +33,8 @@ object UrlShortenerController {
     } ~ path(Segment) { urlHash =>
       rejectEmptyResponse {
         complete(
-          repository
-            .resolveFullUrl(urlHash)
+          shortenerService
+            .resolve(urlHash)
             .map(_.map(toRedirectResponse)),
         )
       }

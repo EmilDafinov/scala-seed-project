@@ -37,7 +37,7 @@ k8s_resource(
 )
 
 k8s_resource(
-  workload='redis',
+  workload='redis-deployment',
   labels = ['infra']
 )
 

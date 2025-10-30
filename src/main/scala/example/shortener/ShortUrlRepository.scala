@@ -37,7 +37,7 @@ class ShortUrlRepository(dbConfig: Database)(implicit ec: ExecutionContext) {
     }
   }
 
-  def resolveFullUrl(shortUrl: String): Future[Option[URL]] = {
+  def resolve(shortUrl: String): Future[Option[URL]] = {
     dbConfig.run(
       sql"""
           SELECT full_url
