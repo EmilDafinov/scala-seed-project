@@ -1,0 +1,65 @@
+{
+	"info": {
+		"_postman_id": "e561c3fb-4604-48a0-ac55-0ad8969600e8",
+		"name": "dev_env_demo Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43536165",
+		"_collection_link": "https://emil-7975925.postman.co/workspace/Emil's-Workspace~2936d309-53be-4a62-8b3a-7aae9a78a0f3/collection/43536165-e561c3fb-4604-48a0-ac55-0ad8969600e8?action=share&source=collection_link&creator=43536165"
+	},
+	"item": [
+		{
+			"name": "localhost:9000/shorten",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:9000/shorten?url=https%3A%2F%2Fmedium.com%2Fstreamingdata%2Frunning-kafka-locally-inside-kubernetes-25e84586bbf3",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"shorten"
+					],
+					"query": [
+						{
+							"key": "url",
+							"value": "https%3A%2F%2Fmedium.com%2Fstreamingdata%2Frunning-kafka-locally-inside-kubernetes-25e84586bbf3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get full url",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9000/:url_hash",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						":url_hash"
+					],
+					"variable": [
+						{
+							"key": "url_hash",
+							"value": "853875e1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
