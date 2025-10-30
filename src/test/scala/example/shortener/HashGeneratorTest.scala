@@ -4,6 +4,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import java.net.URL
 import scala.util.Random
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class HashGeneratorTest extends AnyWordSpec {
 
