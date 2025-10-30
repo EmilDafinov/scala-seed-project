@@ -9,6 +9,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class DuplicateShortenedUrlException(message: String, cause: Throwable) extends RuntimeException(message, cause)
 
+/** One possible improvement here: the [[ExecutionContext]] argument here is the one used for application logic, but there is
+ * one instance where it is used for DB operations (when doing flatMap within the transaction). A separate execution context
+ * might be more appropriate for IO-bound tasks
+ *
+ */
 class ShortUrlRepository(dbConfig: Database)(implicit ec: ExecutionContext) {
 
   private val POSTGRES_UNIQUE_CONSTRAINT_VIOLATION_ERROR_CODE = "23505"
