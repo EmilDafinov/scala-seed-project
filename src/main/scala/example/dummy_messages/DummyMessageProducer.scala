@@ -9,17 +9,13 @@ case class EventToDeliver(
 
 class DummyMessageProducer {
   private val random  = scala.util.Random
-  private val eventGroups = List(
-    "account1",
-    "account2",
-    "account3",
-    "account4",
-    "account5",
-  )
+  private val tenantCount = 5
+  private val customerCount = 10
+
   def dummyMessages(count: Int): Seq[EventToDeliver] = {
     (0 until  count)
       .map { _ =>
-        val eventGroupId = eventGroups(random.nextInt(eventGroups.size))
+        val eventGroupId = s"tenant${random.nextInt(tenantCount)}:customer${random.nextInt(customerCount)}"
         EventToDeliver(
           eventGroup = eventGroupId,
           content = s"""{ "eventGroup": "$eventGroupId", "field": "${UUID.randomUUID().toString}" }"""

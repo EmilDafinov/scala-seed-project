@@ -16,7 +16,7 @@ lazy val root = (project in file("."))
     name := "Scala Seed Project",
     libraryDependencies ++= Seq(
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
-      "org.apache.pekko" %% "pekko-stream" % "1.1.0",
+      "org.apache.pekko" %% "pekko-stream" % pekkoVersion,
       "org.apache.pekko" %% "pekko-slf4j" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoVersion,
       "org.apache.pekko" %% "pekko-connectors-kafka" % "1.0.0",
@@ -32,7 +32,7 @@ lazy val root = (project in file("."))
       "org.scalatestplus" %% "mockito-5-12" % "3.2.19.0" % Test,
       "io.circe" %% "circe-core" % "0.15.0-M1",
       "org.scalacheck" %% "scalacheck" % "1.18.1" % Test,
-      "org.mdedetrich" %% "pekko-http-circe" % "1.1.0" % pekkoVersion,
+      "org.mdedetrich" %% "pekko-http-circe" % pekkoVersion,
     ),
     dockerBaseImage := "amazoncorretto:11-alpine-jdk",
     dockerExposedPorts := Seq(9000, 5005),

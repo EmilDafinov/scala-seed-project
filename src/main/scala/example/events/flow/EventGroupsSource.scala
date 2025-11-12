@@ -9,11 +9,13 @@ import org.apache.pekko.stream.scaladsl.Source
 
 object EventGroupsSource {
 
+  private val eventGroupsClientId = 2.toString
+
   def apply(
-             bootstrapServers: Iterable[String],
-             eventGroupsConsumerGroupId: String,
-             eventGroupsTopic: String
-           )(implicit system: ActorSystem): Source[String, Consumer.Control] = {
+    bootstrapServers: Iterable[String],
+    eventGroupsConsumerGroupId: String,
+    eventGroupsTopic: String
+  )(implicit system: ActorSystem): Source[String, Consumer.Control] = {
     Consumer
       .plainSource(
         settings = ConsumerSettings(
@@ -21,9 +23,9 @@ object EventGroupsSource {
           keyDeserializer = new StringDeserializer,
           valueDeserializer = new StringDeserializer,
         )
-          .withGroupId(eventGroupsConsumerGroupId)
-          .withClientId(2.toString)
-          .withBootstrapServers(bootstrapServers.mkString(",")),
+      .withGroupId(eventGroupsConsumerGroupId)
+      .withClientId(eventGroupsClientId)
+      .withBootstrapServers(bootstrapServers.mkString(",")),
         subscription = topics(eventGroupsTopic)
       )
       .map(_.key())

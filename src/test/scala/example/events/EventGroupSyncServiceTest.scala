@@ -85,7 +85,7 @@ class EventGroupSyncServiceTest extends UnitTestSpec {
         eventDeliveryServiceMock.deliverEvent(
           eventId = anyLong(),
           eventContent = anyString()
-        )(any[ExecutionContext])
+        )
       } thenReturn Future.successful()
 
       When("trying to sync the test group")
@@ -205,7 +205,7 @@ class EventGroupSyncServiceTest extends UnitTestSpec {
         eventDeliveryServiceMock.deliverEvent(
           eventId = anyLong(),
           eventContent = anyString()
-        )(any[ExecutionContext])
+        )
       } thenReturn Future.successful()
 
       When("trying to sync the test group")

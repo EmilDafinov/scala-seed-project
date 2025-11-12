@@ -26,6 +26,17 @@ class EventRepository(dbConfig: Database)(implicit ec: ExecutionContext) {
     )
   }
 
+  def storeEvents(eventsBatch: Seq[(String, String)]): Future[Seq[String]] = {
+    scribe.info(s"Storing ${eventsBatch.size} records:Z  $eventsBatch")
+    val inserts = eventsBatch.map { case (eventGroup, content) =>
+      sqlu"""
+        INSERT INTO events (event_group, content, external_id)
+        VALUES ($eventGroup, $content ::jsonb, ${UUID.randomUUID().toString}:: uuid)
+      """.map(_ => eventGroup)
+    }
+    dbConfig.run(DBIO.sequence(inserts))
+  }
+
   /**
    *
    * @param eventGroup the event group the unsent events belong to.

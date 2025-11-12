@@ -6,9 +6,11 @@ import example.events.flow._
 import org.apache.pekko.kafka.scaladsl.Consumer
 import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
 import org.apache.pekko.{Done, NotUsed}
+import scribe.Logger
 import slick.jdbc.JdbcBackend.Database
 
-import scala.concurrent.Future
+import java.util.concurrent.Executors
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 trait EventsModule {
@@ -29,10 +31,17 @@ trait EventsModule {
 
   private lazy val eventRepository: EventRepository = new EventRepository(db)
 
+  import scribe.format._
+  Logger.root
+    .clearHandlers()
+    .withHandler(formatter = formatter"[$levelColored][$dateFull][$threadName][$positionAbbreviated] - $messages")
+    .replace()
+
+  private val blockingEC: ExecutionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(50))
   lazy val eventGroupProcessor: EventGroupSyncService = new EventGroupSyncService(
-    eventDeliveryService = new EvenDeliveryService,
+    eventDeliveryService = new EvenDeliveryService()(blockingEC),
     eventRepository = eventRepository
-  )
+  )(blockingEC, system)
 
   lazy val eventGroupSink: Sink[String, Future[Done]] = EventGroupSink(
     eventGroupsTopic = eventGroupsTopic,
@@ -53,5 +62,5 @@ trait EventsModule {
 
   lazy val eventStoringFlow: Flow[(String, String), String, NotUsed] = EventStoringFlow(eventRepository)
 
-  lazy val eventGroupSyncingFlow: Flow[String, String, NotUsed] = EventGroupProcessingFlow(eventGroupProcessor)
+  lazy val eventGroupSyncingFlow: Flow[String, String, NotUsed] = EventGroupProcessingFlow(eventGroupProcessor)(blockingEC)
 }

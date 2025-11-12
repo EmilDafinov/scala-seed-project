@@ -12,7 +12,7 @@ import scala.util.{Failure, Success}
 
 object InputListeners {
 
-  def startHttpServer(implicit system: ActorSystem, ec: ExecutionContext) = {
+  def startHttpServer(implicit system: ActorSystem, ec: ExecutionContext): Future[Http.ServerBinding] = {
     Http()
       .newServerAt("0.0.0.0", 9000)
       .bind(routes)
@@ -29,7 +29,7 @@ object InputListeners {
                                   eventsSource: Source[(String, String), Consumer.Control],
                                   eventStoringFlow: Flow[(String, String), String, NotUsed],
                                   eventGroupSink: Sink[String, Future[Done]]
-                                )(implicit system: ActorSystem, ec: ExecutionContext) = {
+                                )(implicit system: ActorSystem, ec: ExecutionContext): Unit = {
     eventsSource
       .via(eventStoringFlow)
       .runWith(eventGroupSink)
@@ -40,7 +40,7 @@ object InputListeners {
                                         eventGroupsSource: Source[String, Consumer.Control],
                                         eventGroupSyncingFlow: Flow[String, String, NotUsed],
                                         eventGroupSink: Sink[String, Future[Done]]
-                                      )(implicit system: ActorSystem, ec: ExecutionContext) = {
+                                      )(implicit system: ActorSystem, ec: ExecutionContext): Unit = {
     eventGroupsSource
       .via(eventGroupSyncingFlow)
       .runWith(eventGroupSink)

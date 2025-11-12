@@ -24,7 +24,7 @@ class EventGroupSyncService(
    * from a single event group as possible
    *
    * @param eventGroup the id of the event group whose messages we want to process
-   * @return whether or not all messages in the group were processed
+   * @return if there are messages in the group that haven't been synced
    */
   def syncEventGroup(eventGroup: String): Future[Boolean] =
     for {
@@ -35,14 +35,16 @@ class EventGroupSyncService(
 
       batchSuccessfullyDelivered <- Source(undeliveredEventsBatch)
         .mapAsync(1) { case (currentEventId, unsentEvent) =>
+          scribe.info(s"Starting delivery of event [$eventGroup][$currentEventId]")
           eventDeliveryService
             .deliverEvent(
               eventId = currentEventId,
               eventContent = unsentEvent
             )
+            .map(_ => scribe.info(s"Successfully sent event [$eventGroup][$currentEventId]"))
             .recoverWith {
               case NonFatal(ex) =>
-                scribe.error(s"Failed sending event with id $currentEventId for group $eventGroup", ex)
+                scribe.error(s"Failed sending event [$eventGroup][$currentEventId]", ex)
                 eventRepository.markGroupEventsAsSuccessful(
                   eventGroup = eventGroup,
                   untilEventId = currentEventId - 1
